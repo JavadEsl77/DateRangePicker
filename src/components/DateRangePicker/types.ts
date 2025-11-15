@@ -3,6 +3,6 @@ export interface DateRange {
   end: Date | null;
 }
 
-export type PresetType = 'thisWeek' | 'lastWeek' | 'last7Days' | 'currentMonth' | 'nextMonth' | null;
+export type PresetType = 'today' | 'last3Days' | 'last7Days' | 'lastWeek' | 'lastMonth' | 'last24Hours' | null;
 
 export type CalendarType = 'gregorian' | 'persian';
