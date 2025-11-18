@@ -252,6 +252,64 @@ export const DateInputs = ({
     e.target.select();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: string, max?: number) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const input = e.currentTarget;
+      const currentValue = toEnglishNumber(input.value);
+      let numValue = parseInt(currentValue) || 0;
+      
+      if (e.key === 'ArrowUp') {
+        numValue++;
+      } else {
+        numValue--;
+      }
+      
+      // Apply constraints
+      if (max !== undefined && numValue > max) {
+        numValue = 0;
+      } else if (numValue < 0) {
+        numValue = max !== undefined ? max : 0;
+      }
+      
+      const paddedValue = field === 'year' ? String(numValue).padStart(4, '0') : String(numValue).padStart(2, '0');
+      const displayValue = calendarType === 'persian' ? toPersianNumber(paddedValue) : paddedValue;
+      
+      // Update the appropriate state
+      if (field === 'startYear') setStartYear(displayValue);
+      else if (field === 'startMonth') setStartMonth(displayValue);
+      else if (field === 'startDay') setStartDay(displayValue);
+      else if (field === 'startHour') setStartHour(displayValue);
+      else if (field === 'startMinute') setStartMinute(displayValue);
+      else if (field === 'endYear') setEndYear(displayValue);
+      else if (field === 'endMonth') setEndMonth(displayValue);
+      else if (field === 'endDay') setEndDay(displayValue);
+      else if (field === 'endHour') setEndHour(displayValue);
+      else if (field === 'endMinute') setEndMinute(displayValue);
+      
+      // Trigger update
+      setTimeout(() => {
+        if (field.startsWith('start')) {
+          updateStartDate(
+            toEnglishNumber(field === 'startYear' ? displayValue : startYear),
+            toEnglishNumber(field === 'startMonth' ? displayValue : startMonth),
+            toEnglishNumber(field === 'startDay' ? displayValue : startDay),
+            toEnglishNumber(field === 'startHour' ? displayValue : startHour),
+            toEnglishNumber(field === 'startMinute' ? displayValue : startMinute)
+          );
+        } else {
+          updateEndDate(
+            toEnglishNumber(field === 'endYear' ? displayValue : endYear),
+            toEnglishNumber(field === 'endMonth' ? displayValue : endMonth),
+            toEnglishNumber(field === 'endDay' ? displayValue : endDay),
+            toEnglishNumber(field === 'endHour' ? displayValue : endHour),
+            toEnglishNumber(field === 'endMinute' ? displayValue : endMinute)
+          );
+        }
+      }, 0);
+    }
+  };
+
   return (
     <div className="flex items-start gap-4 mb-6">
       {calendarType === 'persian' ? (
@@ -269,6 +327,7 @@ export const DateInputs = ({
                   value={startMinute}
                   onChange={handleStartMinuteChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startMinute', 59)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -280,6 +339,7 @@ export const DateInputs = ({
                   value={startHour}
                   onChange={handleStartHourChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startHour', 23)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -297,6 +357,7 @@ export const DateInputs = ({
                   value={startDay}
                   onChange={handleStartDayChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startDay', 31)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -308,6 +369,7 @@ export const DateInputs = ({
                   value={startMonth}
                   onChange={handleStartMonthChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startMonth', 12)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -319,6 +381,7 @@ export const DateInputs = ({
                   value={startYear}
                   onChange={handleStartYearChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startYear', 9999)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -339,6 +402,7 @@ export const DateInputs = ({
                   value={endMinute}
                   onChange={handleEndMinuteChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endMinute', 59)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -350,6 +414,7 @@ export const DateInputs = ({
                   value={endHour}
                   onChange={handleEndHourChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endHour', 23)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -367,6 +432,7 @@ export const DateInputs = ({
                   value={endDay}
                   onChange={handleEndDayChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endDay', 31)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -378,6 +444,7 @@ export const DateInputs = ({
                   value={endMonth}
                   onChange={handleEndMonthChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endMonth', 12)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -389,6 +456,7 @@ export const DateInputs = ({
                   value={endYear}
                   onChange={handleEndYearChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endYear', 9999)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -412,6 +480,7 @@ export const DateInputs = ({
                   value={startDay}
                   onChange={handleStartDayChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startDay', 31)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -422,6 +491,7 @@ export const DateInputs = ({
                   value={startMonth}
                   onChange={handleStartMonthChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startMonth', 12)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -432,6 +502,7 @@ export const DateInputs = ({
                   value={startYear}
                   onChange={handleStartYearChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startYear', 9999)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -448,6 +519,7 @@ export const DateInputs = ({
                   value={startHour}
                   onChange={handleStartHourChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startHour', 23)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -458,6 +530,7 @@ export const DateInputs = ({
                   value={startMinute}
                   onChange={handleStartMinuteChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'startMinute', 59)}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -477,6 +550,7 @@ export const DateInputs = ({
                   value={endDay}
                   onChange={handleEndDayChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endDay', 31)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -487,6 +561,7 @@ export const DateInputs = ({
                   value={endMonth}
                   onChange={handleEndMonthChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endMonth', 12)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -497,6 +572,7 @@ export const DateInputs = ({
                   value={endYear}
                   onChange={handleEndYearChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endYear', 9999)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -513,6 +589,7 @@ export const DateInputs = ({
                   value={endHour}
                   onChange={handleEndHourChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endHour', 23)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -523,6 +600,7 @@ export const DateInputs = ({
                   value={endMinute}
                   onChange={handleEndMinuteChange}
                   onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, 'endMinute', 59)}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
