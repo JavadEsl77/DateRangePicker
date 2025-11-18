@@ -147,7 +147,7 @@ export const DateRangePicker = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8 flex items-center justify-center">
-      <Card className={`w-full max-w-4xl p-6 shadow-xl bg-white min-h-[600px] ${calendarType === 'persian' ? 'font-persian' : ''}`} dir={calendarType === 'persian' ? 'rtl' : 'ltr'}>
+      <Card className={`w-full max-w-4xl p-6 shadow-xl bg-white min-h-[500px] ${calendarType === 'persian' ? 'font-persian' : ''}`} dir={calendarType === 'persian' ? 'rtl' : 'ltr'}>
         <div className="flex items-center justify-between mb-6" dir="ltr">
           <div className="flex items-center gap-3">
             <Switch
