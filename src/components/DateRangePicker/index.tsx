@@ -14,7 +14,7 @@ export const DateRangePicker = () => {
   const today = new Date();
   const [dateRange, setDateRange] = useState<DateRange>({ start: today, end: today });
   const [activePreset, setActivePreset] = useState<PresetType>('today');
-  const [calendarType, setCalendarType] = useState<CalendarType>('gregorian');
+  const [calendarType, setCalendarType] = useState<CalendarType>('persian');
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isSelectingRange, setIsSelectingRange] = useState(false);
   const [expectingStart, setExpectingStart] = useState(true);
