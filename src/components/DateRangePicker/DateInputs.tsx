@@ -318,25 +318,30 @@ export const DateInputs = ({
       const currentIndex = persianOrder.indexOf(field);
       
       if (currentIndex !== -1) {
-        const nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
+        let nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
         
-        if (nextIndex >= 0 && nextIndex < persianOrder.length) {
-          const nextField = persianOrder[nextIndex];
-          
-          // Focus the next field
-          setTimeout(() => {
-            if (nextField === 'startYear') startYearRef.current?.focus();
-            else if (nextField === 'startMonth') startMonthRef.current?.focus();
-            else if (nextField === 'startDay') startDayRef.current?.focus();
-            else if (nextField === 'startHour') startHourRef.current?.focus();
-            else if (nextField === 'startMinute') startMinuteRef.current?.focus();
-            else if (nextField === 'endYear') endYearRef.current?.focus();
-            else if (nextField === 'endMonth') endMonthRef.current?.focus();
-            else if (nextField === 'endDay') endDayRef.current?.focus();
-            else if (nextField === 'endHour') endHourRef.current?.focus();
-            else if (nextField === 'endMinute') endMinuteRef.current?.focus();
-          }, 0);
+        // Loop around: if at end and Tab, go to start; if at start and Shift+Tab, go to end
+        if (nextIndex >= persianOrder.length) {
+          nextIndex = 0; // Loop to first
+        } else if (nextIndex < 0) {
+          nextIndex = persianOrder.length - 1; // Loop to last
         }
+        
+        const nextField = persianOrder[nextIndex];
+        
+        // Focus the next field
+        setTimeout(() => {
+          if (nextField === 'startYear') startYearRef.current?.focus();
+          else if (nextField === 'startMonth') startMonthRef.current?.focus();
+          else if (nextField === 'startDay') startDayRef.current?.focus();
+          else if (nextField === 'startHour') startHourRef.current?.focus();
+          else if (nextField === 'startMinute') startMinuteRef.current?.focus();
+          else if (nextField === 'endYear') endYearRef.current?.focus();
+          else if (nextField === 'endMonth') endMonthRef.current?.focus();
+          else if (nextField === 'endDay') endDayRef.current?.focus();
+          else if (nextField === 'endHour') endHourRef.current?.focus();
+          else if (nextField === 'endMinute') endMinuteRef.current?.focus();
+        }, 0);
       }
       return;
     }
