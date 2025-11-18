@@ -23,10 +23,14 @@ export const DateInputs = ({
   const [startYear, setStartYear] = useState('');
   const [startMonth, setStartMonth] = useState('');
   const [startDay, setStartDay] = useState('');
+  const [startHour, setStartHour] = useState('');
+  const [startMinute, setStartMinute] = useState('');
   
   const [endYear, setEndYear] = useState('');
   const [endMonth, setEndMonth] = useState('');
   const [endDay, setEndDay] = useState('');
+  const [endHour, setEndHour] = useState('');
+  const [endMinute, setEndMinute] = useState('');
 
   useEffect(() => {
     if (startDate) {
@@ -41,10 +45,16 @@ export const DateInputs = ({
         setStartDay(parts[1] || '');
         setStartYear(parts[2] || '');
       }
+      const hours = startDate.getHours().toString().padStart(2, '0');
+      const minutes = startDate.getMinutes().toString().padStart(2, '0');
+      setStartHour(calendarType === 'persian' ? toPersianNumber(hours) : hours);
+      setStartMinute(calendarType === 'persian' ? toPersianNumber(minutes) : minutes);
     } else {
       setStartYear('');
       setStartMonth('');
       setStartDay('');
+      setStartHour('');
+      setStartMinute('');
     }
   }, [startDate, calendarType]);
 
@@ -61,14 +71,20 @@ export const DateInputs = ({
         setEndDay(parts[1] || '');
         setEndYear(parts[2] || '');
       }
+      const hours = endDate.getHours().toString().padStart(2, '0');
+      const minutes = endDate.getMinutes().toString().padStart(2, '0');
+      setEndHour(calendarType === 'persian' ? toPersianNumber(hours) : hours);
+      setEndMinute(calendarType === 'persian' ? toPersianNumber(minutes) : minutes);
     } else {
       setEndYear('');
       setEndMonth('');
       setEndDay('');
+      setEndHour('');
+      setEndMinute('');
     }
   }, [endDate, calendarType]);
 
-  const updateStartDate = (year: string, month: string, day: string) => {
+  const updateStartDate = (year: string, month: string, day: string, hour?: string, minute?: string) => {
     if (!year && !month && !day) {
       onStartDateChange(null);
       return;
@@ -80,11 +96,14 @@ export const DateInputs = ({
     
     const date = parseDateFromInput(dateString, calendarType);
     if (date) {
+      const h = hour ? parseInt(hour) : 0;
+      const m = minute ? parseInt(minute) : 0;
+      date.setHours(h, m, 0, 0);
       onStartDateChange(date);
     }
   };
 
-  const updateEndDate = (year: string, month: string, day: string) => {
+  const updateEndDate = (year: string, month: string, day: string, hour?: string, minute?: string) => {
     if (!year && !month && !day) {
       onEndDateChange(null);
       return;
@@ -96,6 +115,9 @@ export const DateInputs = ({
     
     const date = parseDateFromInput(dateString, calendarType);
     if (date) {
+      const h = hour ? parseInt(hour) : 0;
+      const m = minute ? parseInt(minute) : 0;
+      date.setHours(h, m, 0, 0);
       onEndDateChange(date);
     }
   };
@@ -120,7 +142,7 @@ export const DateInputs = ({
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setStartYear(displayValue);
     if (value.length === 4 || value === '') {
-      updateStartDate(value, toEnglishNumber(startMonth), toEnglishNumber(startDay));
+      updateStartDate(value, toEnglishNumber(startMonth), toEnglishNumber(startDay), toEnglishNumber(startHour), toEnglishNumber(startMinute));
     }
   };
 
@@ -130,7 +152,7 @@ export const DateInputs = ({
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setStartMonth(displayValue);
     if (value.length === 2 || value === '') {
-      updateStartDate(toEnglishNumber(startYear), value, toEnglishNumber(startDay));
+      updateStartDate(toEnglishNumber(startYear), value, toEnglishNumber(startDay), toEnglishNumber(startHour), toEnglishNumber(startMinute));
     }
   };
 
@@ -140,7 +162,7 @@ export const DateInputs = ({
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setStartDay(displayValue);
     if (value.length === 2 || value === '') {
-      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), value);
+      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), value, toEnglishNumber(startHour), toEnglishNumber(startMinute));
     }
   };
 
@@ -150,7 +172,7 @@ export const DateInputs = ({
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setEndYear(displayValue);
     if (value.length === 4 || value === '') {
-      updateEndDate(value, toEnglishNumber(endMonth), toEnglishNumber(endDay));
+      updateEndDate(value, toEnglishNumber(endMonth), toEnglishNumber(endDay), toEnglishNumber(endHour), toEnglishNumber(endMinute));
     }
   };
 
@@ -160,7 +182,7 @@ export const DateInputs = ({
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setEndMonth(displayValue);
     if (value.length === 2 || value === '') {
-      updateEndDate(toEnglishNumber(endYear), value, toEnglishNumber(endDay));
+      updateEndDate(toEnglishNumber(endYear), value, toEnglishNumber(endDay), toEnglishNumber(endHour), toEnglishNumber(endMinute));
     }
   };
 
@@ -170,15 +192,59 @@ export const DateInputs = ({
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setEndDay(displayValue);
     if (value.length === 2 || value === '') {
-      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), value);
+      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), value, toEnglishNumber(endHour), toEnglishNumber(endMinute));
+    }
+  };
+
+  const handleStartHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = toEnglishNumber(e.target.value);
+    let value = inputValue.replace(/\D/g, '').slice(0, 2);
+    if (value && parseInt(value) > 23) value = '23';
+    const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
+    setStartHour(displayValue);
+    if (value.length === 2 || value === '') {
+      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), toEnglishNumber(startDay), value, toEnglishNumber(startMinute));
+    }
+  };
+
+  const handleStartMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = toEnglishNumber(e.target.value);
+    let value = inputValue.replace(/\D/g, '').slice(0, 2);
+    if (value && parseInt(value) > 59) value = '59';
+    const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
+    setStartMinute(displayValue);
+    if (value.length === 2 || value === '') {
+      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), toEnglishNumber(startDay), toEnglishNumber(startHour), value);
+    }
+  };
+
+  const handleEndHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = toEnglishNumber(e.target.value);
+    let value = inputValue.replace(/\D/g, '').slice(0, 2);
+    if (value && parseInt(value) > 23) value = '23';
+    const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
+    setEndHour(displayValue);
+    if (value.length === 2 || value === '') {
+      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), toEnglishNumber(endDay), value, toEnglishNumber(endMinute));
+    }
+  };
+
+  const handleEndMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = toEnglishNumber(e.target.value);
+    let value = inputValue.replace(/\D/g, '').slice(0, 2);
+    if (value && parseInt(value) > 59) value = '59';
+    const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
+    setEndMinute(displayValue);
+    if (value.length === 2 || value === '') {
+      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), toEnglishNumber(endDay), toEnglishNumber(endHour), value);
     }
   };
 
   const handleBlur = (type: 'start' | 'end') => {
     if (type === 'start') {
-      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), toEnglishNumber(startDay));
+      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), toEnglishNumber(startDay), toEnglishNumber(startHour), toEnglishNumber(startMinute));
     } else {
-      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), toEnglishNumber(endDay));
+      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), toEnglishNumber(endDay), toEnglishNumber(endHour), toEnglishNumber(endMinute));
     }
   };
 
@@ -187,148 +253,256 @@ export const DateInputs = ({
       {calendarType === 'persian' ? (
         <>
           {/* Start Date - Persian (Right side) */}
-          <div>
-            <label className="text-xs text-muted-foreground mb-2 block font-medium text-right">
-              شروع
-            </label>
-            <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`} dir="rtl">
-              <input
-                type="text"
-                placeholder="روز"
-                value={startDay}
-                onChange={handleStartDayChange}
-                onBlur={() => handleBlur('start')}
-                className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-                dir="rtl"
-              />
-              <span className="text-muted-foreground text-sm px-0.5">/</span>
-              <input
-                type="text"
-                placeholder="ماه"
-                value={startMonth}
-                onChange={handleStartMonthChange}
-                onBlur={() => handleBlur('start')}
-                className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-                dir="rtl"
-              />
-              <span className="text-muted-foreground text-sm px-0.5">/</span>
-              <input
-                type="text"
-                placeholder="سال"
-                value={startYear}
-                onChange={handleStartYearChange}
-                onBlur={() => handleBlur('start')}
-                className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-                dir="rtl"
-              />
+          <div className="flex items-end gap-2">
+            <div>
+              <label className="text-xs text-muted-foreground mb-2 block font-medium text-right">
+                ساعت شروع
+              </label>
+              <div className="flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background border-input" dir="rtl">
+                <input
+                  type="text"
+                  placeholder="دقیقه"
+                  value={startMinute}
+                  onChange={handleStartMinuteChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">:</span>
+                <input
+                  type="text"
+                  placeholder="ساعت"
+                  value={startHour}
+                  onChange={handleStartHourChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+              </div>
+            </div>
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-2 block font-medium text-right">
+                شروع
+              </label>
+              <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`} dir="rtl">
+                <input
+                  type="text"
+                  placeholder="روز"
+                  value={startDay}
+                  onChange={handleStartDayChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">/</span>
+                <input
+                  type="text"
+                  placeholder="ماه"
+                  value={startMonth}
+                  onChange={handleStartMonthChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">/</span>
+                <input
+                  type="text"
+                  placeholder="سال"
+                  value={startYear}
+                  onChange={handleStartYearChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+              </div>
             </div>
           </div>
           {/* End Date - Persian (Left side) */}
-          <div>
-            <label className="text-xs text-muted-foreground mb-2 block font-medium text-right">
-              پایان
-            </label>
-            <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`} dir="rtl">
-              <input
-                type="text"
-                placeholder="روز"
-                value={endDay}
-                onChange={handleEndDayChange}
-                onBlur={() => handleBlur('end')}
-                className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-                dir="rtl"
-              />
-              <span className="text-muted-foreground text-sm px-0.5">/</span>
-              <input
-                type="text"
-                placeholder="ماه"
-                value={endMonth}
-                onChange={handleEndMonthChange}
-                onBlur={() => handleBlur('end')}
-                className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-                dir="rtl"
-              />
-              <span className="text-muted-foreground text-sm px-0.5">/</span>
-              <input
-                type="text"
-                placeholder="سال"
-                value={endYear}
-                onChange={handleEndYearChange}
-                onBlur={() => handleBlur('end')}
-                className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-                dir="rtl"
-              />
+          <div className="flex items-end gap-2">
+            <div>
+              <label className="text-xs text-muted-foreground mb-2 block font-medium text-right">
+                ساعت پایان
+              </label>
+              <div className="flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background border-input" dir="rtl">
+                <input
+                  type="text"
+                  placeholder="دقیقه"
+                  value={endMinute}
+                  onChange={handleEndMinuteChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">:</span>
+                <input
+                  type="text"
+                  placeholder="ساعت"
+                  value={endHour}
+                  onChange={handleEndHourChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+              </div>
+            </div>
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-2 block font-medium text-right">
+                پایان
+              </label>
+              <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`} dir="rtl">
+                <input
+                  type="text"
+                  placeholder="روز"
+                  value={endDay}
+                  onChange={handleEndDayChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">/</span>
+                <input
+                  type="text"
+                  placeholder="ماه"
+                  value={endMonth}
+                  onChange={handleEndMonthChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">/</span>
+                <input
+                  type="text"
+                  placeholder="سال"
+                  value={endYear}
+                  onChange={handleEndYearChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                  dir="rtl"
+                />
+              </div>
             </div>
           </div>
         </>
       ) : (
         <>
           {/* Start Date - Gregorian (Left side) */}
-          <div>
-            <label className="text-xs text-muted-foreground mb-2 block font-medium">
-              Start
-            </label>
-            <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`}>
-              <input
-                type="text"
-                placeholder="DD"
-                value={startDay}
-                onChange={handleStartDayChange}
-                onBlur={() => handleBlur('start')}
-                className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-              />
-              <span className="text-muted-foreground text-sm px-0.5">/</span>
-              <input
-                type="text"
-                placeholder="MM"
-                value={startMonth}
-                onChange={handleStartMonthChange}
-                onBlur={() => handleBlur('start')}
-                className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-              />
-              <span className="text-muted-foreground text-sm px-0.5">/</span>
-              <input
-                type="text"
-                placeholder="YYYY"
-                value={startYear}
-                onChange={handleStartYearChange}
-                onBlur={() => handleBlur('start')}
-                className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-              />
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-2 block font-medium">
+                Start
+              </label>
+              <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`}>
+                <input
+                  type="text"
+                  placeholder="DD"
+                  value={startDay}
+                  onChange={handleStartDayChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">/</span>
+                <input
+                  type="text"
+                  placeholder="MM"
+                  value={startMonth}
+                  onChange={handleStartMonthChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">/</span>
+                <input
+                  type="text"
+                  placeholder="YYYY"
+                  value={startYear}
+                  onChange={handleStartYearChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-2 block font-medium">
+                Start Time
+              </label>
+              <div className="flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background border-input">
+                <input
+                  type="text"
+                  placeholder="HH"
+                  value={startHour}
+                  onChange={handleStartHourChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">:</span>
+                <input
+                  type="text"
+                  placeholder="MM"
+                  value={startMinute}
+                  onChange={handleStartMinuteChange}
+                  onBlur={() => handleBlur('start')}
+                  className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+              </div>
             </div>
           </div>
           {/* End Date - Gregorian (Right side) */}
-          <div>
-            <label className="text-xs text-muted-foreground mb-2 block font-medium">
-              End
-            </label>
-            <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`}>
-              <input
-                type="text"
-                placeholder="DD"
-                value={endDay}
-                onChange={handleEndDayChange}
-                onBlur={() => handleBlur('end')}
-                className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-              />
-              <span className="text-muted-foreground text-sm px-0.5">/</span>
-              <input
-                type="text"
-                placeholder="MM"
-                value={endMonth}
-                onChange={handleEndMonthChange}
-                onBlur={() => handleBlur('end')}
-                className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-              />
-              <span className="text-muted-foreground text-sm px-0.5">/</span>
-              <input
-                type="text"
-                placeholder="YYYY"
-                value={endYear}
-                onChange={handleEndYearChange}
-                onBlur={() => handleBlur('end')}
-                className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
-              />
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-2 block font-medium">
+                End
+              </label>
+              <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`}>
+                <input
+                  type="text"
+                  placeholder="DD"
+                  value={endDay}
+                  onChange={handleEndDayChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">/</span>
+                <input
+                  type="text"
+                  placeholder="MM"
+                  value={endMonth}
+                  onChange={handleEndMonthChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">/</span>
+                <input
+                  type="text"
+                  placeholder="YYYY"
+                  value={endYear}
+                  onChange={handleEndYearChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-2 block font-medium">
+                End Time
+              </label>
+              <div className="flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background border-input">
+                <input
+                  type="text"
+                  placeholder="HH"
+                  value={endHour}
+                  onChange={handleEndHourChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+                <span className="text-muted-foreground text-sm px-0.5">:</span>
+                <input
+                  type="text"
+                  placeholder="MM"
+                  value={endMinute}
+                  onChange={handleEndMinuteChange}
+                  onBlur={() => handleBlur('end')}
+                  className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
+                />
+              </div>
             </div>
           </div>
         </>
