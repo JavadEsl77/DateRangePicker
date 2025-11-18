@@ -248,6 +248,10 @@ export const DateInputs = ({
     }
   };
 
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select();
+  };
+
   return (
     <div className="flex items-start gap-4 mb-6">
       {calendarType === 'persian' ? (
@@ -264,6 +268,7 @@ export const DateInputs = ({
                   placeholder="دقیقه"
                   value={startMinute}
                   onChange={handleStartMinuteChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -274,6 +279,7 @@ export const DateInputs = ({
                   placeholder="ساعت"
                   value={startHour}
                   onChange={handleStartHourChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -290,6 +296,7 @@ export const DateInputs = ({
                   placeholder="روز"
                   value={startDay}
                   onChange={handleStartDayChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -300,6 +307,7 @@ export const DateInputs = ({
                   placeholder="ماه"
                   value={startMonth}
                   onChange={handleStartMonthChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -310,6 +318,7 @@ export const DateInputs = ({
                   placeholder="سال"
                   value={startYear}
                   onChange={handleStartYearChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -329,6 +338,7 @@ export const DateInputs = ({
                   placeholder="دقیقه"
                   value={endMinute}
                   onChange={handleEndMinuteChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -339,6 +349,7 @@ export const DateInputs = ({
                   placeholder="ساعت"
                   value={endHour}
                   onChange={handleEndHourChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -355,6 +366,7 @@ export const DateInputs = ({
                   placeholder="روز"
                   value={endDay}
                   onChange={handleEndDayChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -365,6 +377,7 @@ export const DateInputs = ({
                   placeholder="ماه"
                   value={endMonth}
                   onChange={handleEndMonthChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -375,6 +388,7 @@ export const DateInputs = ({
                   placeholder="سال"
                   value={endYear}
                   onChange={handleEndYearChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                   dir="rtl"
@@ -397,6 +411,7 @@ export const DateInputs = ({
                   placeholder="DD"
                   value={startDay}
                   onChange={handleStartDayChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -406,6 +421,7 @@ export const DateInputs = ({
                   placeholder="MM"
                   value={startMonth}
                   onChange={handleStartMonthChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -415,6 +431,7 @@ export const DateInputs = ({
                   placeholder="YYYY"
                   value={startYear}
                   onChange={handleStartYearChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -430,6 +447,7 @@ export const DateInputs = ({
                   placeholder="HH"
                   value={startHour}
                   onChange={handleStartHourChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -439,6 +457,7 @@ export const DateInputs = ({
                   placeholder="MM"
                   value={startMinute}
                   onChange={handleStartMinuteChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('start')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -457,6 +476,7 @@ export const DateInputs = ({
                   placeholder="DD"
                   value={endDay}
                   onChange={handleEndDayChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -466,6 +486,7 @@ export const DateInputs = ({
                   placeholder="MM"
                   value={endMonth}
                   onChange={handleEndMonthChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-6 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -475,6 +496,7 @@ export const DateInputs = ({
                   placeholder="YYYY"
                   value={endYear}
                   onChange={handleEndYearChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-12 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -490,6 +512,7 @@ export const DateInputs = ({
                   placeholder="HH"
                   value={endHour}
                   onChange={handleEndHourChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
@@ -499,6 +522,7 @@ export const DateInputs = ({
                   placeholder="MM"
                   value={endMinute}
                   onChange={handleEndMinuteChange}
+                  onFocus={handleFocus}
                   onBlur={() => handleBlur('end')}
                   className="h-7 w-8 text-center text-sm p-0 border-0 bg-transparent outline-none focus:outline-none"
                 />
