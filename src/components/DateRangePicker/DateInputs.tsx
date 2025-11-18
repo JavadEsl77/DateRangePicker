@@ -309,6 +309,38 @@ export const DateInputs = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: string, max?: number) => {
+    // Handle Tab key for navigation
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      
+      // Define navigation order for Persian calendar
+      const persianOrder = ['startYear', 'startMonth', 'startDay', 'startHour', 'startMinute', 'endYear', 'endMonth', 'endDay', 'endHour', 'endMinute'];
+      const currentIndex = persianOrder.indexOf(field);
+      
+      if (currentIndex !== -1) {
+        const nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
+        
+        if (nextIndex >= 0 && nextIndex < persianOrder.length) {
+          const nextField = persianOrder[nextIndex];
+          
+          // Focus the next field
+          setTimeout(() => {
+            if (nextField === 'startYear') startYearRef.current?.focus();
+            else if (nextField === 'startMonth') startMonthRef.current?.focus();
+            else if (nextField === 'startDay') startDayRef.current?.focus();
+            else if (nextField === 'startHour') startHourRef.current?.focus();
+            else if (nextField === 'startMinute') startMinuteRef.current?.focus();
+            else if (nextField === 'endYear') endYearRef.current?.focus();
+            else if (nextField === 'endMonth') endMonthRef.current?.focus();
+            else if (nextField === 'endDay') endDayRef.current?.focus();
+            else if (nextField === 'endHour') endHourRef.current?.focus();
+            else if (nextField === 'endMinute') endMinuteRef.current?.focus();
+          }, 0);
+        }
+      }
+      return;
+    }
+    
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       e.preventDefault();
       const input = e.currentTarget;
