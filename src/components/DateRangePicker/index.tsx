@@ -168,14 +168,6 @@ export const DateRangePicker = () => {
             >
               {calendarType === 'persian' ? 'ریست' : 'Reset'}
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleGoToToday}
-              className="text-xs"
-            >
-              {calendarType === 'persian' ? 'برو به امروز' : 'Go to Today'}
-            </Button>
           </div>
         </div>
 
