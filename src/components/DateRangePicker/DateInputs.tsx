@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { formatDateToInput, parseDateFromInput } from './utils';
 import { CalendarType } from './types';
@@ -31,6 +31,18 @@ export const DateInputs = ({
   const [endDay, setEndDay] = useState('');
   const [endHour, setEndHour] = useState('');
   const [endMinute, setEndMinute] = useState('');
+
+  // Refs for auto-focus
+  const startYearRef = useRef<HTMLInputElement>(null);
+  const startMonthRef = useRef<HTMLInputElement>(null);
+  const startDayRef = useRef<HTMLInputElement>(null);
+  const startHourRef = useRef<HTMLInputElement>(null);
+  const startMinuteRef = useRef<HTMLInputElement>(null);
+  const endYearRef = useRef<HTMLInputElement>(null);
+  const endMonthRef = useRef<HTMLInputElement>(null);
+  const endDayRef = useRef<HTMLInputElement>(null);
+  const endHourRef = useRef<HTMLInputElement>(null);
+  const endMinuteRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (startDate) {
@@ -141,7 +153,13 @@ export const DateInputs = ({
     const value = inputValue.replace(/\D/g, '').slice(0, 4);
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setStartYear(displayValue);
-    if (value.length === 4 || value === '') {
+    if (value.length === 4) {
+      updateStartDate(value, toEnglishNumber(startMonth), toEnglishNumber(startDay), toEnglishNumber(startHour), toEnglishNumber(startMinute));
+      setTimeout(() => {
+        startMonthRef.current?.focus();
+        startMonthRef.current?.select();
+      }, 0);
+    } else if (value === '') {
       updateStartDate(value, toEnglishNumber(startMonth), toEnglishNumber(startDay), toEnglishNumber(startHour), toEnglishNumber(startMinute));
     }
   };
@@ -151,7 +169,13 @@ export const DateInputs = ({
     const value = inputValue.replace(/\D/g, '').slice(0, 2);
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setStartMonth(displayValue);
-    if (value.length === 2 || value === '') {
+    if (value.length === 2) {
+      updateStartDate(toEnglishNumber(startYear), value, toEnglishNumber(startDay), toEnglishNumber(startHour), toEnglishNumber(startMinute));
+      setTimeout(() => {
+        startDayRef.current?.focus();
+        startDayRef.current?.select();
+      }, 0);
+    } else if (value === '') {
       updateStartDate(toEnglishNumber(startYear), value, toEnglishNumber(startDay), toEnglishNumber(startHour), toEnglishNumber(startMinute));
     }
   };
@@ -161,7 +185,9 @@ export const DateInputs = ({
     const value = inputValue.replace(/\D/g, '').slice(0, 2);
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setStartDay(displayValue);
-    if (value.length === 2 || value === '') {
+    if (value.length === 2) {
+      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), value, toEnglishNumber(startHour), toEnglishNumber(startMinute));
+    } else if (value === '') {
       updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), value, toEnglishNumber(startHour), toEnglishNumber(startMinute));
     }
   };
@@ -171,7 +197,13 @@ export const DateInputs = ({
     const value = inputValue.replace(/\D/g, '').slice(0, 4);
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setEndYear(displayValue);
-    if (value.length === 4 || value === '') {
+    if (value.length === 4) {
+      updateEndDate(value, toEnglishNumber(endMonth), toEnglishNumber(endDay), toEnglishNumber(endHour), toEnglishNumber(endMinute));
+      setTimeout(() => {
+        endMonthRef.current?.focus();
+        endMonthRef.current?.select();
+      }, 0);
+    } else if (value === '') {
       updateEndDate(value, toEnglishNumber(endMonth), toEnglishNumber(endDay), toEnglishNumber(endHour), toEnglishNumber(endMinute));
     }
   };
@@ -181,7 +213,13 @@ export const DateInputs = ({
     const value = inputValue.replace(/\D/g, '').slice(0, 2);
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setEndMonth(displayValue);
-    if (value.length === 2 || value === '') {
+    if (value.length === 2) {
+      updateEndDate(toEnglishNumber(endYear), value, toEnglishNumber(endDay), toEnglishNumber(endHour), toEnglishNumber(endMinute));
+      setTimeout(() => {
+        endDayRef.current?.focus();
+        endDayRef.current?.select();
+      }, 0);
+    } else if (value === '') {
       updateEndDate(toEnglishNumber(endYear), value, toEnglishNumber(endDay), toEnglishNumber(endHour), toEnglishNumber(endMinute));
     }
   };
@@ -191,7 +229,9 @@ export const DateInputs = ({
     const value = inputValue.replace(/\D/g, '').slice(0, 2);
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setEndDay(displayValue);
-    if (value.length === 2 || value === '') {
+    if (value.length === 2) {
+      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), value, toEnglishNumber(endHour), toEnglishNumber(endMinute));
+    } else if (value === '') {
       updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), value, toEnglishNumber(endHour), toEnglishNumber(endMinute));
     }
   };
@@ -202,7 +242,13 @@ export const DateInputs = ({
     if (value && parseInt(value) > 23) value = '23';
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setStartHour(displayValue);
-    if (value.length === 2 || value === '') {
+    if (value.length === 2) {
+      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), toEnglishNumber(startDay), value, toEnglishNumber(startMinute));
+      setTimeout(() => {
+        startMinuteRef.current?.focus();
+        startMinuteRef.current?.select();
+      }, 0);
+    } else if (value === '') {
       updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), toEnglishNumber(startDay), value, toEnglishNumber(startMinute));
     }
   };
@@ -213,7 +259,9 @@ export const DateInputs = ({
     if (value && parseInt(value) > 59) value = '59';
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setStartMinute(displayValue);
-    if (value.length === 2 || value === '') {
+    if (value.length === 2) {
+      updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), toEnglishNumber(startDay), toEnglishNumber(startHour), value);
+    } else if (value === '') {
       updateStartDate(toEnglishNumber(startYear), toEnglishNumber(startMonth), toEnglishNumber(startDay), toEnglishNumber(startHour), value);
     }
   };
@@ -224,7 +272,13 @@ export const DateInputs = ({
     if (value && parseInt(value) > 23) value = '23';
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setEndHour(displayValue);
-    if (value.length === 2 || value === '') {
+    if (value.length === 2) {
+      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), toEnglishNumber(endDay), value, toEnglishNumber(endMinute));
+      setTimeout(() => {
+        endMinuteRef.current?.focus();
+        endMinuteRef.current?.select();
+      }, 0);
+    } else if (value === '') {
       updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), toEnglishNumber(endDay), value, toEnglishNumber(endMinute));
     }
   };
@@ -235,7 +289,9 @@ export const DateInputs = ({
     if (value && parseInt(value) > 59) value = '59';
     const displayValue = calendarType === 'persian' ? toPersianNumber(value) : value;
     setEndMinute(displayValue);
-    if (value.length === 2 || value === '') {
+    if (value.length === 2) {
+      updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), toEnglishNumber(endDay), toEnglishNumber(endHour), value);
+    } else if (value === '') {
       updateEndDate(toEnglishNumber(endYear), toEnglishNumber(endMonth), toEnglishNumber(endDay), toEnglishNumber(endHour), value);
     }
   };
@@ -322,6 +378,7 @@ export const DateInputs = ({
               </label>
               <div className="flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background border-input" dir="rtl">
                 <input
+                  ref={startMinuteRef}
                   type="text"
                   placeholder="دقیقه"
                   value={startMinute}
@@ -334,6 +391,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">:</span>
                 <input
+                  ref={startHourRef}
                   type="text"
                   placeholder="ساعت"
                   value={startHour}
@@ -352,6 +410,7 @@ export const DateInputs = ({
               </label>
               <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`} dir="rtl">
                 <input
+                  ref={startDayRef}
                   type="text"
                   placeholder="روز"
                   value={startDay}
@@ -364,6 +423,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">/</span>
                 <input
+                  ref={startMonthRef}
                   type="text"
                   placeholder="ماه"
                   value={startMonth}
@@ -376,6 +436,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">/</span>
                 <input
+                  ref={startYearRef}
                   type="text"
                   placeholder="سال"
                   value={startYear}
@@ -397,6 +458,7 @@ export const DateInputs = ({
               </label>
               <div className="flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background border-input" dir="rtl">
                 <input
+                  ref={endMinuteRef}
                   type="text"
                   placeholder="دقیقه"
                   value={endMinute}
@@ -409,6 +471,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">:</span>
                 <input
+                  ref={endHourRef}
                   type="text"
                   placeholder="ساعت"
                   value={endHour}
@@ -427,6 +490,7 @@ export const DateInputs = ({
               </label>
               <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`} dir="rtl">
                 <input
+                  ref={endDayRef}
                   type="text"
                   placeholder="روز"
                   value={endDay}
@@ -439,6 +503,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">/</span>
                 <input
+                  ref={endMonthRef}
                   type="text"
                   placeholder="ماه"
                   value={endMonth}
@@ -451,6 +516,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">/</span>
                 <input
+                  ref={endYearRef}
                   type="text"
                   placeholder="سال"
                   value={endYear}
@@ -475,6 +541,7 @@ export const DateInputs = ({
               </label>
               <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`}>
                 <input
+                  ref={startDayRef}
                   type="text"
                   placeholder="DD"
                   value={startDay}
@@ -486,6 +553,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">/</span>
                 <input
+                  ref={startMonthRef}
                   type="text"
                   placeholder="MM"
                   value={startMonth}
@@ -497,6 +565,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">/</span>
                 <input
+                  ref={startYearRef}
                   type="text"
                   placeholder="YYYY"
                   value={startYear}
@@ -514,6 +583,7 @@ export const DateInputs = ({
               </label>
               <div className="flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background border-input">
                 <input
+                  ref={startHourRef}
                   type="text"
                   placeholder="HH"
                   value={startHour}
@@ -525,6 +595,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">:</span>
                 <input
+                  ref={startMinuteRef}
                   type="text"
                   placeholder="MM"
                   value={startMinute}
@@ -545,6 +616,7 @@ export const DateInputs = ({
               </label>
               <div className={`flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background ${error ? 'border-destructive' : 'border-input'}`}>
                 <input
+                  ref={endDayRef}
                   type="text"
                   placeholder="DD"
                   value={endDay}
@@ -556,6 +628,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">/</span>
                 <input
+                  ref={endMonthRef}
                   type="text"
                   placeholder="MM"
                   value={endMonth}
@@ -567,6 +640,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">/</span>
                 <input
+                  ref={endYearRef}
                   type="text"
                   placeholder="YYYY"
                   value={endYear}
@@ -584,6 +658,7 @@ export const DateInputs = ({
               </label>
               <div className="flex items-center gap-0.5 px-3 py-2 rounded-md border bg-background border-input">
                 <input
+                  ref={endHourRef}
                   type="text"
                   placeholder="HH"
                   value={endHour}
@@ -595,6 +670,7 @@ export const DateInputs = ({
                 />
                 <span className="text-muted-foreground text-sm px-0.5">:</span>
                 <input
+                  ref={endMinuteRef}
                   type="text"
                   placeholder="MM"
                   value={endMinute}
