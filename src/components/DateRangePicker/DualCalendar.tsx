@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isToday } from 'date-fns';
@@ -12,9 +13,13 @@ interface DualCalendarProps {
   calendarType: CalendarType;
   currentMonth: Date;
   onMonthChange: (date: Date) => void;
+  isSelectingRange: boolean;
+  minDate?: Date | null;
+  maxDate?: Date | null;
 }
 
-export const DualCalendar = ({ startDate, endDate, onDateClick, calendarType, currentMonth, onMonthChange }: DualCalendarProps) => {
+export const DualCalendar = ({ startDate, endDate, onDateClick, calendarType, currentMonth, onMonthChange, isSelectingRange, minDate, maxDate }: DualCalendarProps) => {
+  const [hoverDate, setHoverDate] = useState<Date | null>(null);
   const getNextMonth = () => {
     if (calendarType === 'persian') {
       const m = moment(currentMonth);
@@ -58,6 +63,11 @@ export const DualCalendar = ({ startDate, endDate, onDateClick, calendarType, cu
               onPrevMonth={handlePrevMonth}
               showPrevButton
               calendarType={calendarType}
+              isSelectingRange={isSelectingRange}
+              hoverDate={hoverDate}
+              onHoverDate={setHoverDate}
+              minDate={minDate}
+              maxDate={maxDate}
             />
             <CalendarMonth
               month={nextMonth}
@@ -67,6 +77,11 @@ export const DualCalendar = ({ startDate, endDate, onDateClick, calendarType, cu
               onNextMonth={handleNextMonth}
               showNextButton
               calendarType={calendarType}
+              isSelectingRange={isSelectingRange}
+              hoverDate={hoverDate}
+              onHoverDate={setHoverDate}
+              minDate={minDate}
+              maxDate={maxDate}
             />
           </>
         ) : (
@@ -79,6 +94,11 @@ export const DualCalendar = ({ startDate, endDate, onDateClick, calendarType, cu
               onPrevMonth={handlePrevMonth}
               showPrevButton
               calendarType={calendarType}
+              isSelectingRange={isSelectingRange}
+              hoverDate={hoverDate}
+              onHoverDate={setHoverDate}
+              minDate={minDate}
+              maxDate={maxDate}
             />
             <CalendarMonth
               month={nextMonth}
@@ -88,6 +108,11 @@ export const DualCalendar = ({ startDate, endDate, onDateClick, calendarType, cu
               onNextMonth={handleNextMonth}
               showNextButton
               calendarType={calendarType}
+              isSelectingRange={isSelectingRange}
+              hoverDate={hoverDate}
+              onHoverDate={setHoverDate}
+              minDate={minDate}
+              maxDate={maxDate}
             />
           </>
         )}
@@ -106,6 +131,11 @@ interface CalendarMonthProps {
   showPrevButton?: boolean;
   showNextButton?: boolean;
   calendarType: CalendarType;
+  isSelectingRange: boolean;
+  hoverDate: Date | null;
+  onHoverDate: (date: Date | null) => void;
+  minDate?: Date | null;
+  maxDate?: Date | null;
 }
 
 const CalendarMonth = ({
@@ -118,6 +148,11 @@ const CalendarMonth = ({
   showPrevButton,
   showNextButton,
   calendarType,
+  isSelectingRange,
+  hoverDate,
+  onHoverDate,
+  minDate,
+  maxDate,
 }: CalendarMonthProps) => {
   const getDaysInMonth = () => {
     if (calendarType === 'persian') {
@@ -235,6 +270,21 @@ const CalendarMonth = ({
           const inRange = isDateInRange(date, startDate, endDate);
           const isCurrentDay = isToday(date);
           
+          // Check if date is disabled
+          const isDisabled = 
+            (minDate && date < minDate) || 
+            (maxDate && date > maxDate);
+          
+          // Calculate hover preview range
+          let inHoverRange = false;
+          let isHoverEnd = false;
+          if (isSelectingRange && startDate && hoverDate && !endDate) {
+            const hoverStart = startDate < hoverDate ? startDate : hoverDate;
+            const hoverEnd = startDate < hoverDate ? hoverDate : startDate;
+            inHoverRange = isDateInRange(date, hoverStart, hoverEnd);
+            isHoverEnd = isSameDay(date, hoverDate);
+          }
+          
           const dayNumber = calendarType === 'persian' 
             ? toPersianNumber(parseInt(moment(date).format('jD')))
             : format(date, 'd');
@@ -242,16 +292,25 @@ const CalendarMonth = ({
           return (
             <button
               key={date.toISOString()}
-              onClick={() => onDateClick(date)}
+              onClick={() => !isDisabled && onDateClick(date)}
+              onMouseEnter={() => !isDisabled && onHoverDate(date)}
+              onMouseLeave={() => onHoverDate(null)}
+              disabled={isDisabled}
               className={`
-                h-8 flex items-center justify-center text-sm rounded-md transition-all
-                ${isStart || isEnd 
-                  ? 'bg-primary text-primary-foreground font-semibold shadow-sm' 
-                  : inRange 
-                    ? 'bg-primary/10 text-primary font-medium' 
-                    : 'hover:bg-accent'
+                h-8 flex items-center justify-center text-sm rounded-md transition-all relative
+                ${isDisabled 
+                  ? 'text-muted-foreground/30 cursor-not-allowed' 
+                  : isStart || isEnd 
+                    ? 'bg-primary text-primary-foreground font-semibold shadow-sm z-10' 
+                    : inRange 
+                      ? 'bg-primary/20 text-primary font-medium' 
+                      : isHoverEnd && isSelectingRange
+                        ? 'bg-primary/40 text-primary font-semibold'
+                        : inHoverRange && isSelectingRange
+                          ? 'bg-primary/10 text-primary'
+                          : 'hover:bg-accent'
                 }
-                ${isCurrentDay && !isStart && !isEnd ? 'ring-1 ring-primary' : ''}
+                ${isCurrentDay && !isStart && !isEnd && !isDisabled ? 'ring-1 ring-primary ring-inset' : ''}
               `}
             >
               {dayNumber}

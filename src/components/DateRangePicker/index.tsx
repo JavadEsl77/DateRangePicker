@@ -17,6 +17,7 @@ export const DateRangePicker = () => {
   const [calendarType, setCalendarType] = useState<CalendarType>('gregorian');
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isSelectingRange, setIsSelectingRange] = useState(false);
+  const [expectingStart, setExpectingStart] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,11 +34,13 @@ export const DateRangePicker = () => {
       setDateRange({ start: null, end: null });
       setActivePreset(null);
       setIsSelectingRange(false);
+      setExpectingStart(true);
     } else {
       const range = getPresetDateRange(preset);
       setDateRange(range);
       setActivePreset(preset);
       setIsSelectingRange(false);
+      setExpectingStart(true);
       if (range.start) {
         if (calendarType === 'persian') {
           const m = moment(range.start);
@@ -52,6 +55,7 @@ export const DateRangePicker = () => {
   const handleStartDateChange = (date: Date | null) => {
     setDateRange({ ...dateRange, start: date });
     setActivePreset(null);
+    // Don't change expectingStart - let calendar click logic handle it
     if (date) {
       if (calendarType === 'persian') {
         const m = moment(date);
@@ -65,24 +69,53 @@ export const DateRangePicker = () => {
   const handleEndDateChange = (date: Date | null) => {
     setDateRange({ ...dateRange, end: date });
     setActivePreset(null);
+    // Don't change expectingStart - let calendar click logic handle it
   };
 
   const handleCalendarDateClick = (date: Date) => {
     setActivePreset(null);
     
-    if (!isSelectingRange || !dateRange.start) {
-      // First click - set start date
-      setDateRange({ start: date, end: null });
-      setIsSelectingRange(true);
-    } else {
-      // Second click - set end date
-      if (date < dateRange.start) {
-        // If clicked date is before start, swap them
-        setDateRange({ start: date, end: dateRange.start });
+    // Expecting START (odd click: 1st, 3rd, 5th, ...)
+    if (expectingStart) {
+      // Check if we need to reset based on previous range
+      if (dateRange.end && date > dateRange.end) {
+        // Clicked after previous end → Reset and set as new start
+        setDateRange({ start: date, end: null });
+        setIsSelectingRange(true);
+        setExpectingStart(false);
+      } else if (dateRange.start && dateRange.end && date >= dateRange.start && date <= dateRange.end) {
+        // Clicked inside previous range → Shrink range, set as new start
+        setDateRange({ start: date, end: dateRange.end });
+        setIsSelectingRange(false);
+        setExpectingStart(false);
       } else {
-        setDateRange({ ...dateRange, end: date });
+        // Normal case: set as start
+        setDateRange({ start: date, end: null });
+        setIsSelectingRange(true);
+        setExpectingStart(false);
       }
-      setIsSelectingRange(false);
+      return;
+    }
+    
+    // Expecting END (even click: 2nd, 4th, 6th, ...)
+    if (!expectingStart) {
+      // Check if clicked date is before start → Reset
+      if (dateRange.start && date < dateRange.start) {
+        setDateRange({ start: date, end: null });
+        setIsSelectingRange(true);
+        setExpectingStart(false); // Still expecting end after reset
+      } else if (dateRange.start && dateRange.end && date >= dateRange.start && date <= dateRange.end) {
+        // Clicked inside current range → Shrink range, set as new end
+        setDateRange({ start: dateRange.start, end: date });
+        setIsSelectingRange(false);
+        setExpectingStart(true); // Next click will be start
+      } else if (dateRange.start) {
+        // Normal case: set as end
+        setDateRange({ start: dateRange.start, end: date });
+        setIsSelectingRange(false);
+        setExpectingStart(true); // Next click will be start
+      }
+      return;
     }
   };
 
@@ -97,6 +130,7 @@ export const DateRangePicker = () => {
     const today = new Date();
     setDateRange({ start: today, end: today });
     setActivePreset(null);
+    setExpectingStart(true);
     if (calendarType === 'persian') {
       const m = moment(today);
       setCurrentMonth(moment().jYear(m.jYear()).jMonth(m.jMonth()).jDate(1).toDate());
@@ -108,6 +142,7 @@ export const DateRangePicker = () => {
   const handleReset = () => {
     setDateRange({ start: null, end: null });
     setActivePreset(null);
+    setExpectingStart(true);
   };
 
   return (
@@ -181,6 +216,7 @@ export const DateRangePicker = () => {
             calendarType={calendarType}
             currentMonth={currentMonth}
             onMonthChange={setCurrentMonth}
+            isSelectingRange={isSelectingRange}
           />
         </div>
       </Card>
